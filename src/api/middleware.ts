@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { apiConfig } from "../config.js";
+import { config } from "../config.js";
 import { respondWithError } from "./json.js";
 import { HTTPError } from "./errors.js";
 
@@ -13,7 +13,7 @@ export function middlewareLogResponse(req: Request, res: Response, next: NextFun
 }
 
 export function middlewareMetricsInc(req: Request, res: Response, next: NextFunction) {
-  apiConfig.fileserverHits++;
+  config.api.fileserverHits++;
   next();
 }
 
