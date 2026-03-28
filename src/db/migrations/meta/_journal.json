@@ -15,6 +15,13 @@
       "when": 1774731449162,
       "tag": "0001_awesome_shiva",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774733207037,
+      "tag": "0002_graceful_thunderball",
+      "breakpoints": true
     }
   ]
 }
