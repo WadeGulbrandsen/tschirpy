@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // "baseUrl": ".",
     "target": "esnext",
     "module": "node16",
     "rootDir": "./src",
@@ -9,7 +8,6 @@
     "moduleResolution": "node16",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    // "ignoreDeprecations": "6.0",
   },
   "include": [
     "./src/**/*.ts"

@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
-import { BadRequestError, NotFoundError } from "./errors.js";
+import { BadRequestError, NotFoundError, UserNotAuthorizedError } from "./errors.js";
 import { createChirp, getChirp, getChirps } from "../db/queries/chirps.js";
 import { NewChirp } from "../db/schema.js";
+import { getBearerToken, validateJWT } from "./auth.js";
+import { config } from "../config.js";
 
 const badWords = ["kerfuffle", "sharbert", "fornax"];
 const maxChirpLength = 140;
@@ -27,18 +29,14 @@ export async function handlerChirps(req: Request, res: Response) {
 export async function handlerNewChirp(req: Request, res: Response) {
   type params = {
     body: string;
-    userId: string;
   };
+
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.jwt.secret);
 
   const parsed: params = req.body;
 
-  if (parsed.body.length > maxChirpLength) {
-    throw new BadRequestError("Chirp is too long. Max length is 140");
-  }
-
-  const chirp: NewChirp = { body: cleanText(parsed.body), userId: parsed.userId };
-
-  const result = await createChirp(chirp);
+  const result = await createChirp({ body: cleanText(parsed.body), userId });
 
   if (!result) {
     throw new Error(`Unable to create chirp: ${parsed.body}`);
@@ -48,7 +46,9 @@ export async function handlerNewChirp(req: Request, res: Response) {
 }
 
 function cleanText(text: string) {
-  const badWords = ["kerfuffle", "sharbert", "fornax"];
+  if (text.length > maxChirpLength) {
+    throw new BadRequestError("Chirp is too long. Max length is 140");
+  }
   const words = text.split(" ");
   const cleanedText = words.map((word) => {
     return isBadWord(word) ? "****" : word;
