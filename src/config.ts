@@ -10,6 +10,7 @@ type APIConfig = {
   fileserverHits: number;
   port: number;
   platform: string;
+  refreshTokenExpiryDays: number;
 };
 
 type DBConfig = {
@@ -30,6 +31,7 @@ export const config: Config = {
     fileserverHits: 0,
     port: Number(envOrThrow("PORT")),
     platform: envOrThrow("PLATFORM"),
+    refreshTokenExpiryDays: 60,
   },
   db: {
     url: envOrThrow("DB_URL"),
