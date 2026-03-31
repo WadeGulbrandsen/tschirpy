@@ -3,7 +3,7 @@ import postgres from "postgres";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { config } from "./config.js";
-import { handlerNewChirp, handlerChirps, handlerChirp } from "./api/chirps.js";
+import { handlerNewChirp, handlerChirps, handlerChirp, handlerDeleteChirp } from "./api/chirps.js";
 import { errorMiddleware, middlewareLogResponse, middlewareMetricsInc } from "./api/middleware.js";
 import { handlerMetrics } from "./api/metrics.js";
 import { handlerReset } from "./api/reset.js";
@@ -47,6 +47,9 @@ app.post("/api/revoke", (req, res, next) => {
 });
 app.get("/api/chirps", (req, res, next) => {
   Promise.resolve(handlerChirps(req, res)).catch(next);
+});
+app.delete("/api/chirps/:chirpId", (req, res, next) => {
+  Promise.resolve(handlerDeleteChirp(req, res)).catch(next);
 });
 app.get("/api/chirps/:chirpId", (req, res, next) => {
   Promise.resolve(handlerChirp(req, res)).catch(next);

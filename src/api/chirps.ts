@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
-import { BadRequestError, NotFoundError, UserNotAuthorizedError } from "./errors.js";
-import { createChirp, getChirp, getChirps } from "../db/queries/chirps.js";
-import { NewChirp } from "../db/schema.js";
+import { BadRequestError, NotFoundError, UserForbiddenError, UserNotAuthorizedError } from "./errors.js";
+import { createChirp, deleteChirp, getChirp, getChirps } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../config.js";
 
@@ -19,6 +18,24 @@ export async function handlerChirp(req: Request, res: Response) {
     throw new NotFoundError(`Chirp not found: chirpId=${chirpId}`);
   }
   respondWithJSON(res, 200, chirp);
+}
+
+export async function handlerDeleteChirp(req:Request, res: Response) {
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.jwt.secret);
+  const chirpId = req.params.chirpId;
+  if (!chirpId || Array.isArray(chirpId)) {
+    throw new BadRequestError(`Invalid chirpId: ${chirpId}`);
+  }
+  const chirp = await getChirp(chirpId);
+  if (!chirp) {
+    throw new NotFoundError(`Chirp not found: chirpId=${chirpId}`);
+  }
+  if (chirp.userId !== userId) {
+    throw new UserForbiddenError("Permission denied");
+  }
+  const result = await deleteChirp(chirpId);
+  res.status(204).send();
 }
 
 export async function handlerChirps(req: Request, res: Response) {
