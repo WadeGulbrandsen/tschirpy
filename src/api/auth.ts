@@ -56,6 +56,22 @@ export function extractBearerToken(header: string) {
   return token;
 }
 
+export function getApiKey(req: Request) {
+  const authHeader = req.get("Authorization");
+  if (!authHeader) {
+    throw new UserNotAuthorizedError("Authorization header missing");
+  }
+  return extractApiKey(authHeader);
+}
+
+export function extractApiKey(header: string) {
+  const [authType, apiKey] = header.split(" ");
+  if (authType !== "ApiKey" || !apiKey) {
+    throw new BadRequestError("Malformed authorization header");
+  }
+  return apiKey;
+}
+
 export async function makeRefreshToken(userId: string) {
   const token = randomBytes(256).toString("hex");
   const expiresAt = new Date();

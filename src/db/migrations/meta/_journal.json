@@ -29,6 +29,13 @@
       "when": 1774878648480,
       "tag": "0003_early_black_panther",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775076912591,
+      "tag": "0004_natural_vector",
+      "breakpoints": true
     }
   ]
 }

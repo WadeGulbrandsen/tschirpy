@@ -9,6 +9,7 @@ import { handlerMetrics } from "./api/metrics.js";
 import { handlerReset } from "./api/reset.js";
 import { handlerReadiness } from "./api/readiness.js";
 import { handlerLogin, handlerNewUser, handlerRefresh, handlerRevoke, handlerUpdateUser } from "./api/users.js";
+import { handlerPolka } from "./api/webhooks.js";
 
 const migrationClient = postgres(config.db.url, { max: 1, onnotice: () => { } });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -56,6 +57,9 @@ app.get("/api/chirps/:chirpId", (req, res, next) => {
 });
 app.post("/api/chirps", (req, res, next) => {
   Promise.resolve(handlerNewChirp(req, res)).catch(next);
+});
+app.post("/api/polka/webhooks", (req, res, next) => {
+  Promise.resolve(handlerPolka(req, res)).catch(next);
 });
 
 app.use(errorMiddleware);
