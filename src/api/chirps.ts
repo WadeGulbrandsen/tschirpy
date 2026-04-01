@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError, NotFoundError, UserForbiddenError, UserNotAuthorizedError } from "./errors.js";
-import { createChirp, deleteChirp, getChirp, getChirps } from "../db/queries/chirps.js";
+import { createChirp, deleteChirp, getChirp, getChirps, getChirpsByAuthor } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../config.js";
 
@@ -39,7 +39,11 @@ export async function handlerDeleteChirp(req:Request, res: Response) {
 }
 
 export async function handlerChirps(req: Request, res: Response) {
-  const results = await getChirps();
+  const authorId = req.query.authorId;
+  const reverse = req.query.sort === "desc";
+  const results = typeof authorId === "string"
+    ? await getChirpsByAuthor(authorId, reverse)
+    : await getChirps(reverse);
   respondWithJSON(res, 200, results);
 }
 
